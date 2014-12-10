@@ -22,17 +22,18 @@ if ($.support.cors || !$.ajaxTransport || !window.XDomainRequest) {
   return;
 }
 
-var httpRegEx = /^https?:\/\//i;
 var getOrPostRegEx = /^get|post$/i;
-var sameSchemeRegEx = new RegExp('^'+location.protocol, 'i');
 
 // ajaxTransport exists in jQuery 1.5+
 $.ajaxTransport('* text html xml json', function(options, userOptions, jqXHR) {
   
   // Only continue if the request is: asynchronous, uses GET or POST method, has HTTP or HTTPS protocol, and has the same scheme as the calling page
-  if (!options.crossDomain || !options.async || !getOrPostRegEx.test(options.type) || !httpRegEx.test(options.url) || !sameSchemeRegEx.test(options.url)) {
+  if (!options.crossDomain || !options.async || !getOrPostRegEx.test(options.type)) {
     return;
   }
+
+  // use protocol-relative URL / schemeless URI
+  options.url = options.url.replace(/^(http:\/\/|https:\/\/|\/\/)/,"//");
 
   var xdr = null;
 
@@ -113,5 +114,6 @@ $.ajaxTransport('* text html xml json', function(options, userOptions, jqXHR) {
     }
   };
 });
+
 
 }));
